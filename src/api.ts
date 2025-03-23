@@ -61,4 +61,81 @@ export class QuestionsApi {
 
     return response;
   }
+
+  async createCategory(name: string): Promise<Category | null> {
+    const response = await fetch(BASE_URL + '/categories', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    });
+  
+    if (!response.ok) {
+      console.error('Error creating category');
+      return null;
+    }
+  
+    return await response.json();
+  }
+
+  async updateCategory(slug: string, newName: string): Promise<Category | null> {
+    const response = await fetch(BASE_URL + `/categories/${slug}`, {
+      method: 'PATCH', // eða PUT ef það passar við API
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: newName }),
+    });
+  
+    if (!response.ok) {
+      console.error('Error updating category');
+      return null;
+    }
+  
+    return await response.json();
+  }
+
+  async deleteCategory(slug: string): Promise<boolean> {
+    const response = await fetch(BASE_URL + `/categories/${slug}`, {
+      method: 'DELETE',
+    });
+  
+    return response.ok;
+  }
+
+  async createQuestion(question: {
+    question: string;
+    answers: string[];
+    correctAnswer: number;
+    category: string;
+  }): Promise<Question | null> {
+    const response = await fetch(BASE_URL + '/questions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(question),
+    });
+  
+    if (!response.ok) {
+      console.error('Error creating question');
+      return null;
+    }
+  
+    return await response.json();
+  }
+
+  async updateQuestion(
+    id: number,
+    question: {
+      question: string;
+      answers: string[];
+      correctAnswer: number;
+      category: string;
+    }
+  ): Promise<Question | null> {
+    const res = await fetch(`${BASE_URL}/questions/${id}`, {
+      method: 'PATCH', // eða PUT, fer eftir API
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(question),
+    });
+  
+    if (!res.ok) return null;
+    return await res.json();
+  }
 }
