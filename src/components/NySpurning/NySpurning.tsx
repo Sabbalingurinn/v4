@@ -27,6 +27,8 @@ export function NySpurning() {
       })),
     };
 
+    console.log('Senda til API:', JSON.stringify(payload, null, 2));
+
     const response = await api.createQuestion(payload);
 
     if (response?.ok) {
@@ -81,7 +83,7 @@ export function NySpurning() {
       <input
         value={categoryId}
         onChange={(e) => setCategoryId(e.target.value)}
-        placeholder="ID flokks (ekki slug)"
+        placeholder="UUID flokks (ekki slug!)"
         required
       />
 

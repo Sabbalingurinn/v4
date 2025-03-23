@@ -114,8 +114,9 @@ export class QuestionsApi {
     });
   
     if (!res.ok) return null;
-    return await res.json(); // return type þarf að passa við backend
+    return await res.json();
   }
+  
   
 
   async updateQuestion(
