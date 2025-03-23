@@ -124,22 +124,25 @@ export class QuestionsApi {
     }
   }
 
-  async updateQuestion(
-    id: number,
-    question: {
-      question: string;
-      answers: string[];
-      correctAnswer: number;
-      category: string;
-    }
-  ): Promise<Question | null> {
-    const res = await fetch(`${BASE_URL}/questions/${id}`, {
-      method: 'PATCH', // eða PUT, fer eftir API
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(question),
-    });
+  async updateQuestion(id: number, data: {
+    text: string;
+    categoryId: number;
+    answers: { text: string; correct: boolean }[];
+  }): Promise<boolean> {
+    try {
+      const res = await fetch(`${BASE_URL}/questions/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
   
-    if (!res.ok) return null;
-    return await res.json();
+      return res.ok;
+    } catch (e) {
+      console.error('Villa við að uppfæra spurningu:', e);
+      return false;
+    }
   }
+  
 }
