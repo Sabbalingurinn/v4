@@ -25,3 +25,12 @@ export type Question = {
   answers: Answer[];
   category: Category;
 };
+
+export type QuestionToCreate = {
+  text: string;
+  categoryId: number;
+  answers: {
+    text: string;
+    correct: boolean;
+  }[];
+};

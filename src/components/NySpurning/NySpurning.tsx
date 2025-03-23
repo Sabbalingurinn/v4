@@ -8,7 +8,7 @@ export function NySpurning() {
   const [text, setText] = useState('');
   const [answers, setAnswers] = useState(['', '', '', '']);
   const [correctAnswer, setCorrectAnswer] = useState(0);
-  const [categoryId, setCategoryId] = useState('');
+  const [categoryId, setCategoryId] = useState<number | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [uiState, setUiState] = useState<'initial' | 'success' | 'error'>('initial');
 
@@ -16,7 +16,7 @@ export function NySpurning() {
     async function fetchCategories() {
       const api = new QuestionsApi();
       const result = await api.getCategories();
-      if (result) {
+      if (result && 'data' in result) {
         setCategories(result.data);
       }
     }
@@ -25,12 +25,10 @@ export function NySpurning() {
   }, []);
 
   async function handleSubmit() {
-    const api = new QuestionsApi();
-
     if (
       !text.trim() ||
-      answers.some((a) => !a.trim()) ||
-      !categoryId ||
+      answers.some((a) => a.trim().length < 3) ||
+      categoryId === null ||
       correctAnswer < 0 ||
       correctAnswer >= answers.length
     ) {
@@ -47,16 +45,15 @@ export function NySpurning() {
       })),
     };
 
-    console.log('Senda til API:', JSON.stringify(payload, null, 2));
+    const api = new QuestionsApi();
+    const success = await api.createQuestion(payload);
 
-    const response = await api.createQuestion(payload);
-
-    if (response?.ok) {
+    if (success) {
       setUiState('success');
       setText('');
       setAnswers(['', '', '', '']);
       setCorrectAnswer(0);
-      setCategoryId('');
+      setCategoryId(null);
     } else {
       setUiState('error');
     }
@@ -89,7 +86,7 @@ export function NySpurning() {
         />
       ))}
 
-      <label>Rétt svar (númer):</label>
+      <label>Rétt svar (númer 0–3):</label>
       <input
         type="number"
         min={0}
@@ -101,8 +98,8 @@ export function NySpurning() {
 
       <label>Flokkur:</label>
       <select
-        value={categoryId}
-        onChange={(e) => setCategoryId(e.target.value)}
+        value={categoryId ?? ''}
+        onChange={(e) => setCategoryId(Number(e.target.value))}
         required
       >
         <option value="">Veldu flokk</option>
@@ -117,7 +114,7 @@ export function NySpurning() {
       <button onClick={handleSubmit}>Búa til</button>
 
       {uiState === 'success' && <p>✅ Spurning búin til!</p>}
-      {uiState === 'error' && <p>❌ Villa við að búa til spurningu.</p>}
+      {uiState === 'error' && <p>❌ Villa: Athugaðu öll svið og reyndu aftur.</p>}
     </div>
   );
 }

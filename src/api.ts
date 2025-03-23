@@ -1,4 +1,4 @@
-import { Category, Paginated, Question } from './types';
+import { Category, Paginated, Question, QuestionToCreate } from './types';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';
 
@@ -100,24 +100,26 @@ export class QuestionsApi {
     return response.ok;
   }
 
-  async createQuestion(data: {
-    text: string;
-    categoryId: string;
-    answers: { text: string; correct: boolean }[];
-  }): Promise<{ ok: boolean } | null> {
-    const res = await fetch(`${BASE_URL}/questions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-  
-    if (!res.ok) return null;
-    return await res.json();
+  async createQuestion(question: QuestionToCreate): Promise<boolean> {
+    try {
+      const res = await fetch(`${BASE_URL}/questions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(question),
+      });
+
+      if (!res.ok) {
+        console.error('Villa við að búa til spurningu:', await res.json());
+      }
+
+      return res.ok;
+    } catch (e) {
+      console.error('Netvilla við að búa til spurningu:', e);
+      return false;
+    }
   }
-  
-  
 
   async updateQuestion(
     id: number,
