@@ -77,20 +77,23 @@ export class QuestionsApi {
     return await response.json();
   }
 
-  async updateCategory(slug: string, newName: string): Promise<Category | null> {
-    const response = await fetch(BASE_URL + `/categories/${slug}`, {
-      method: 'PATCH', // eða PUT ef það passar við API
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: newName }),
-    });
+  async updateCategory(slug: string, data: { name: string }): Promise<boolean> {
+    try {
+      const res = await fetch(`${BASE_URL}/categories/${slug}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
   
-    if (!response.ok) {
-      console.error('Error updating category');
-      return null;
+      return res.ok;
+    } catch (e) {
+      console.error('Villa við að uppfæra flokk:', e);
+      return false;
     }
-  
-    return await response.json();
   }
+  
 
   async deleteCategory(slug: string): Promise<boolean> {
     const response = await fetch(BASE_URL + `/categories/${slug}`, {

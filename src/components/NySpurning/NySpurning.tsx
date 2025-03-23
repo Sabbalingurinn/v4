@@ -113,8 +113,8 @@ export function NySpurning() {
       <br />
       <button onClick={handleSubmit}>Búa til</button>
 
-      {uiState === 'success' && <p>✅ Spurning búin til!</p>}
-      {uiState === 'error' && <p>❌ Villa: Athugaðu öll svið og reyndu aftur.</p>}
+      {uiState === 'success' && <p>Spurning búin til!</p>}
+      {uiState === 'error' && <p>Villa: Athugaðu öll svið og reyndu aftur.</p>}
     </div>
   );
 }

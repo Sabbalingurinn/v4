@@ -8,6 +8,8 @@ export function FlokkarStyring() {
   const [name, setName] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [uiState, setUiState] = useState<UiState>('initial');
+  const [editingSlug, setEditingSlug] = useState<string | null>(null);
+  const [editedName, setEditedName] = useState('');
 
   const api = new QuestionsApi();
 
@@ -36,6 +38,14 @@ export function FlokkarStyring() {
     await fetchCategories();
   }
 
+  async function handleEdit(slug: string) {
+    if (!editedName.trim()) return;
+    await api.updateCategory(slug, { name: editedName });
+    setEditingSlug(null);
+    setEditedName('');
+    await fetchCategories();
+  }
+
   return (
     <div>
       <h1>Flokkastýring</h1>
@@ -56,8 +66,29 @@ export function FlokkarStyring() {
         <ul>
           {categories.map((cat) => (
             <li key={cat.slug}>
-              {cat.name}{' '}
-              <button onClick={() => handleDelete(cat.slug)}>Eyða</button>
+              {editingSlug === cat.slug ? (
+                <>
+                  <input
+                    value={editedName}
+                    onChange={(e) => setEditedName(e.target.value)}
+                  />
+                  <button onClick={() => handleEdit(cat.slug)}>Vista</button>
+                  <button onClick={() => setEditingSlug(null)}>Hætta við</button>
+                </>
+              ) : (
+                <>
+                  {cat.name}{' '}
+                  <button
+                    onClick={() => {
+                      setEditingSlug(cat.slug);
+                      setEditedName(cat.name);
+                    }}
+                  >
+                    Breyta
+                  </button>{' '}
+                  <button onClick={() => handleDelete(cat.slug)}>Eyða</button>
+                </>
+              )}
             </li>
           ))}
         </ul>
