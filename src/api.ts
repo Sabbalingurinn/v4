@@ -101,11 +101,10 @@ export class QuestionsApi {
   }
 
   async createQuestion(data: {
-    question: string;
-    answers: string[];
-    correctAnswer: number;
-    category: string;
-  }): Promise<Question | null> {
+    text: string;
+    categoryId: string;
+    answers: { text: string; correct: boolean }[];
+  }): Promise<{ ok: boolean } | null> {
     const res = await fetch(`${BASE_URL}/questions`, {
       method: 'POST',
       headers: {
@@ -115,8 +114,9 @@ export class QuestionsApi {
     });
   
     if (!res.ok) return null;
-    return await res.json();
-  }  
+    return await res.json(); // return type þarf að passa við backend
+  }
+  
 
   async updateQuestion(
     id: number,

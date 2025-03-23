@@ -4,36 +4,37 @@ import { useState } from 'react';
 import { QuestionsApi } from '@/api';
 
 export function NySpurning() {
-  const [question, setQuestion] = useState('');
+  const [text, setText] = useState('');
   const [answers, setAnswers] = useState(['', '', '', '']);
   const [correctAnswer, setCorrectAnswer] = useState(0);
-  const [category, setCategory] = useState('');
+  const [categoryId, setCategoryId] = useState('');
   const [uiState, setUiState] = useState<'initial' | 'success' | 'error'>('initial');
 
   async function handleSubmit() {
     const api = new QuestionsApi();
 
-    // Einföld validation (valfrjálst)
-    if (!question.trim() || answers.some((a) => !a.trim()) || category.trim() === '') {
+    if (!text.trim() || answers.some((a) => !a.trim()) || !categoryId.trim()) {
       setUiState('error');
       return;
     }
 
     const payload = {
-      question,
-      answers,
-      correctAnswer,
-      category, // slug
+      text,
+      categoryId,
+      answers: answers.map((a, i) => ({
+        text: a,
+        correct: i === correctAnswer,
+      })),
     };
 
     const response = await api.createQuestion(payload);
 
-    if (response) {
+    if (response?.ok) {
       setUiState('success');
-      setQuestion('');
+      setText('');
       setAnswers(['', '', '', '']);
       setCorrectAnswer(0);
-      setCategory('');
+      setCategoryId('');
     } else {
       setUiState('error');
     }
@@ -45,8 +46,8 @@ export function NySpurning() {
 
       <label>Spurning:</label>
       <input
-        value={question}
-        onChange={(e) => setQuestion(e.target.value)}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
         placeholder="Spurning"
         required
       />
@@ -76,11 +77,11 @@ export function NySpurning() {
         required
       />
 
-      <label>Slug flokks:</label>
+      <label>ID flokks (categoryId):</label>
       <input
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        placeholder="Slug flokks (t.d. 'staerdfraedi')"
+        value={categoryId}
+        onChange={(e) => setCategoryId(e.target.value)}
+        placeholder="ID flokks (ekki slug)"
         required
       />
 
