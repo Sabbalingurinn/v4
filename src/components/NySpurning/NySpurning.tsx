@@ -1,19 +1,39 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { QuestionsApi } from '@/api';
+import { Category } from '@/types';
 
 export function NySpurning() {
   const [text, setText] = useState('');
   const [answers, setAnswers] = useState(['', '', '', '']);
   const [correctAnswer, setCorrectAnswer] = useState(0);
   const [categoryId, setCategoryId] = useState('');
+  const [categories, setCategories] = useState<Category[]>([]);
   const [uiState, setUiState] = useState<'initial' | 'success' | 'error'>('initial');
+
+  useEffect(() => {
+    async function fetchCategories() {
+      const api = new QuestionsApi();
+      const result = await api.getCategories();
+      if (result) {
+        setCategories(result.data);
+      }
+    }
+
+    fetchCategories();
+  }, []);
 
   async function handleSubmit() {
     const api = new QuestionsApi();
 
-    if (!text.trim() || answers.some((a) => !a.trim()) || !categoryId.trim()) {
+    if (
+      !text.trim() ||
+      answers.some((a) => !a.trim()) ||
+      !categoryId ||
+      correctAnswer < 0 ||
+      correctAnswer >= answers.length
+    ) {
       setUiState('error');
       return;
     }
@@ -69,7 +89,7 @@ export function NySpurning() {
         />
       ))}
 
-      <label>Rétt svar (númer frá 0):</label>
+      <label>Rétt svar (númer):</label>
       <input
         type="number"
         min={0}
@@ -79,14 +99,21 @@ export function NySpurning() {
         required
       />
 
-      <label>ID flokks (categoryId):</label>
-      <input
+      <label>Flokkur:</label>
+      <select
         value={categoryId}
         onChange={(e) => setCategoryId(e.target.value)}
-        placeholder="UUID flokks (ekki slug!)"
         required
-      />
+      >
+        <option value="">Veldu flokk</option>
+        {categories.map((cat) => (
+          <option key={cat.id} value={cat.id}>
+            {cat.name}
+          </option>
+        ))}
+      </select>
 
+      <br />
       <button onClick={handleSubmit}>Búa til</button>
 
       {uiState === 'success' && <p>✅ Spurning búin til!</p>}
