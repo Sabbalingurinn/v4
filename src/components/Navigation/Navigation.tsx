@@ -9,7 +9,7 @@ export default function Navigation() {
         <li><Link href="/flokkar">Flokkar</Link></li>
         <li><Link href="/flokkar-styring">Breyta flokkum</Link></li>
         <li><Link href="/ny-spurning">Búa til spurningu</Link></li>
-        <li><Link href="/breyta-spurningu">Breyta spurningu</Link></li>
+        <li><Link href="/breyta-spurning">Breyta spurningu</Link></li>
       </ul>
     </nav>
   );

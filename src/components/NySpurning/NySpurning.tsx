@@ -13,12 +13,20 @@ export function NySpurning() {
   async function handleSubmit() {
     const api = new QuestionsApi();
 
-    const response = await api.createQuestion({
+    // Einföld validation (valfrjálst)
+    if (!question.trim() || answers.some((a) => !a.trim()) || category.trim() === '') {
+      setUiState('error');
+      return;
+    }
+
+    const payload = {
       question,
       answers,
       correctAnswer,
-      category,
-    });
+      category, // slug
+    };
+
+    const response = await api.createQuestion(payload);
 
     if (response) {
       setUiState('success');
@@ -72,7 +80,7 @@ export function NySpurning() {
       <input
         value={category}
         onChange={(e) => setCategory(e.target.value)}
-        placeholder="Slug flokks (t.d. 'stærðfræði')"
+        placeholder="Slug flokks (t.d. 'staerdfraedi')"
         required
       />
 

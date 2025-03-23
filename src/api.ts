@@ -100,25 +100,23 @@ export class QuestionsApi {
     return response.ok;
   }
 
-  async createQuestion(question: {
+  async createQuestion(data: {
     question: string;
     answers: string[];
     correctAnswer: number;
     category: string;
   }): Promise<Question | null> {
-    const response = await fetch(BASE_URL + '/questions', {
+    const res = await fetch(`${BASE_URL}/questions`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(question),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
     });
   
-    if (!response.ok) {
-      console.error('Error creating question');
-      return null;
-    }
-  
-    return await response.json();
-  }
+    if (!res.ok) return null;
+    return await res.json();
+  }  
 
   async updateQuestion(
     id: number,
