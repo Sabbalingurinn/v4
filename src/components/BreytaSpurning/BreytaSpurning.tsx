@@ -54,7 +54,7 @@ export function BreytaSpurningu() {
 
     const payload = {
       text: selected.text,
-      categoryId: parseInt(selected.category.id), // tryggjum að þetta sé tala
+      categoryId: parseInt(selected.category.id),
       answers: selected.answers.map((a) => ({
         text: a.text,
         correct: a.correct,
@@ -65,8 +65,26 @@ export function BreytaSpurningu() {
 
     if (success) {
       setMessage('Spurning uppfærð!');
+      await fetchQuestionsForCategory(selected.category.slug);
     } else {
       setMessage('Villa við uppfærslu.');
+    }
+  }
+
+  async function handleDelete() {
+    if (!selected) return;
+
+    const confirmed = confirm('Ertu viss um að þú viljir eyða þessari spurningu?');
+    if (!confirmed) return;
+
+    const success = await api.deleteQuestion(selected.id);
+
+    if (success) {
+      setMessage('Spurning eydd!');
+      setSelected(null);
+      await fetchQuestionsForCategory(selected.category.slug);
+    } else {
+      setMessage('Villa við að eyða spurningu.');
     }
   }
 
@@ -74,7 +92,7 @@ export function BreytaSpurningu() {
     <div>
       <h1>Breyta spurningu</h1>
 
-      {/* Val á flokki */}
+      {/* Velja flokk */}
       <label>Veldu flokk:</label>
       <select
         value={selectedCategorySlug}
@@ -113,7 +131,7 @@ export function BreytaSpurningu() {
         </div>
       )}
 
-      {/* Breyta form */}
+      {/* Form til að breyta */}
       {selected && (
         <div>
           <h2>Breyta spurningu</h2>
@@ -144,6 +162,7 @@ export function BreytaSpurningu() {
           ))}
 
           <button onClick={handleUpdate}>Vista breytingar</button>
+          <button onClick={handleDelete}>Eyða spurningu</button>
           <button
             onClick={() => {
               setSelected(null);

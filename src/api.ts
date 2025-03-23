@@ -145,4 +145,17 @@ export class QuestionsApi {
     }
   }
   
+  async deleteQuestion(id: number): Promise<boolean> {
+    try {
+      const res = await fetch(`${BASE_URL}/questions/${id}`, {
+        method: 'DELETE',
+      });
+  
+      return res.ok;
+    } catch (e) {
+      console.error('Villa við að eyða spurningu:', e);
+      return false;
+    }
+  }
+  
 }
